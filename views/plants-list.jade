@@ -23,8 +23,8 @@ block content
 						td(id=fname + plant.id)= plant[fname]
 					td(id='buttons' + plant.id)
 						div(id='defbuttons' + plant.id)
-							a.button(href='#', onclick='deleteItem(' + plant.id + ')') x
-							a.button(href='#', onclick='editItem(' + plant.id + ')') e
+							a.button(href='#', onclick='editItem(' + plant.id + ')') edit
+							a.button(href='#', onclick='deleteItem(' + plant.id + ')') delete
 			tr#rownew
 				for fname in fields
 					td(id=fname + 'new')
