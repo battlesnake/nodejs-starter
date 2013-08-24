@@ -47,7 +47,7 @@ exports.list = function(name, sort, page, pagesize, callback) {
 	/* Main query */
 	var query = [];
 	var params = [];
-	query.push('select SQL_CALC_FOUND_ROWS * from plants');
+	query.push('select SQL_CALC_FOUND_ROWS id, name, weight from plants');
 	querySortLimit(query, params, {
 		'name': name,
 		'sort': sort,

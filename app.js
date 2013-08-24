@@ -21,17 +21,22 @@ app.configure(function () {
 
 // app.get('/', require('./routes'));
 var plants = {
-	'list'		: require('./routes/plantlist'),
-	'summary'	: require('./routes/plantsummary')
+	'list'		: require('./routes/plants-list'),
+	'summary'	: require('./routes/plants-summary')
 };
-app.use('/plants/summary/ajax', plants.summary.ajax);
-app.use('/plants/summary', plants.summary.page);
-app.use('/plants/data/ajax', plants.list.ajax);
-app.use('/plants/data', plants.list.page);
-app.use('/plants',
-	function(req, res) {
-		res.redirect('/plants/data');
-	});
+
+function makeRedir(from, to) {
+	app.use(from,
+		function (req, res) {
+			res.redirect(to);
+		});
+}
+
+app.get('/plants/summary/ajax/', plants.summary.ajax);
+app.get('/plants/summary/', plants.summary.page);
+app.get('/plants/data/ajax/', plants.list.ajax);
+app.get('/plants/data/', plants.list.page);
+makeRedir('/plants', '/plants/data/');
 
 http.createServer(app).listen(app.get('port'), function(){
   console.log('Express server listening on port ' + app.get('port'));

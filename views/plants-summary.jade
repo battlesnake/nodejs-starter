@@ -1,8 +1,7 @@
 extends plants-layout
 
 block head
-	script(src='javascripts/plantdb.js')
-	script(src='javascripts/plantsummary.js')
+	script(src='/javascripts/plants-summary.js')
 	
 block content
 	table
@@ -26,7 +25,7 @@ block content
 					form(action='#', method='get', id='navForm')
 						div.flexbox
 							div.flex
-								a(href='data') Database
+								a(href='../data/') Go to database
 							div.flex
 								| Sort by:
 								select(name='sort', onchange='submitNavForm()')#sortcol

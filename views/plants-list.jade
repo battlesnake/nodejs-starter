@@ -1,8 +1,7 @@
 extends plants-layout
 
 block head
-	script(src='/javascripts/plantdb.js')
-	script(src='/javascripts/plantlist.js')
+	script(src='/javascripts/plants-list.js')
 	
 block content
 	table
@@ -10,7 +9,7 @@ block content
 				col(span='1', style='width: 20em;')
 				for fname in fields.slice(1, -1)
 					col(span='1')
-				col(span='1', style='width: 1px;')
+				col(span='1', style='width: 10em;')
 		thead
 			tr
 				for fname in fields
@@ -21,7 +20,7 @@ block content
 			for plant in data
 				tr(id='row' + plant.id)
 					for fname in fields
-						td(id=fname + plant.id)= plant.name
+						td(id=fname + plant.id)= plant[fname]
 					td(id='buttons' + plant.id)
 						div(id='defbuttons' + plant.id)
 							a.button(href='#', onclick='deleteItem(' + plant.id + ')') x
@@ -30,17 +29,18 @@ block content
 				for fname in fields
 					td(id=fname + 'new')
 				td(id='buttonsnew')
+					div(id='defbuttonsnew')
 		tfoot
 			tr
 				th(colspan=fields.length)
 					form(action='#', method='get', id='navForm')
 						div.flexbox
 							div.flex
-								a(href='summary') Summary
+								a(href='../summary/') Go to summary
 							div.flex
 								| Show only:
 								select(name='name', onchange='submitNavForm()')
-									option(value='', selected=name=='')= (All)
+									option(value='', selected=!(name+'').length) (All)
 									for pname in names
 										option(value=pname, selected=name==pname)= pname
 							div.flex

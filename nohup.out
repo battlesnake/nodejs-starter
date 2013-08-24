@@ -1,0 +1,114 @@
+Express server listening on port 3000
+Express server listening on port 3000
+Getting data
+[90mGET /plants/data/ [32m200 [90m557ms - 4.76kb[0m
+[90mGET /stylesheets/plants.css [32m200 [90m6ms - 1.24kb[0m
+[90mGET /javascripts/plants-list.js [32m200 [90m2ms - 2.88kb[0m
+[90mGET /javascripts/plants.js [32m200 [90m1ms - 1.19kb[0m
+Getting data
+[90mGET /plants/data/ [32m200 [90m161ms - 4.76kb[0m
+[90mGET /stylesheets/plants.css [32m200 [90m1ms - 1.24kb[0m
+[90mGET /javascripts/plants-list.js [32m200 [90m2ms - 2.88kb[0m
+[90mGET /javascripts/plants.js [32m200 [90m1ms - 1.19kb[0m
+[90mGET /plants [36m302 [90m3ms - 82b[0m
+Getting data
+[90mGET /plants/data/ [32m200 [90m135ms - 4.76kb[0m
+[90mGET /stylesheets/plants.css [32m200 [90m4ms - 1.24kb[0m
+[90mGET /javascripts/plants.js [32m200 [90m2ms - 1.19kb[0m
+[90mGET /javascripts/plants-list.js [32m200 [90m1ms - 2.88kb[0m
+Getting data
+[90mGET /plants/data/ [36m304 [90m168ms[0m
+[90mGET /stylesheets/plants.css [36m304 [90m3ms[0m
+[90mGET /javascripts/plants.js [36m304 [90m3ms[0m
+[90mGET /javascripts/plants-list.js [36m304 [90m1ms[0m
+[90mGET /planst [33m404 [90m1ms[0m
+[90mGET /plants [36m302 [90m2ms - 82b[0m
+Getting data
+[90mGET /plants/data/ [32m200 [90m128ms - 4.76kb[0m
+[90mGET /stylesheets/plants.css [32m200 [90m2ms - 1.24kb[0m
+[90mGET /javascripts/plants-list.js [32m200 [90m2ms - 2.88kb[0m
+[90mGET /javascripts/plants.js [32m200 [90m2ms - 1.19kb[0m
+[90mGET /javascripts/plants-list.js [36m304 [90m2ms[0m
+Getting data
+[90mGET /plants/data/?name=&sort=name&page=1&pagesize=25 [32m200 [90m95ms - 6.13kb[0m
+[90mGET /stylesheets/plants.css [36m304 [90m1ms[0m
+[90mGET /javascripts/plants-list.js [36m304 [90m1ms[0m
+[90mGET /javascripts/plants.js [36m304 [90m1ms[0m
+[90mGET /javascripts/plants-list.js [36m304 [90m0ms[0m
+Getting data
+[90mGET /plants/data/?name=&sort=name&page=1&pagesize=10 [32m200 [90m97ms - 4.77kb[0m
+[90mGET /stylesheets/plants.css [36m304 [90m2ms[0m
+[90mGET /javascripts/plants-list.js [36m304 [90m1ms[0m
+[90mGET /javascripts/plants.js [36m304 [90m1ms[0m
+[90mGET /javascripts/plants-list.js [36m304 [90m1ms[0m
+Getting data
+[90mGET /plants/data/?name=&sort=name&page=1&pagesize=5 [32m200 [90m119ms - 3.6kb[0m
+[90mGET /stylesheets/plants.css [36m304 [90m4ms[0m
+[90mGET /javascripts/plants-list.js [36m304 [90m0ms[0m
+[90mGET /javascripts/plants.js [36m304 [90m0ms[0m
+[90mGET /javascripts/plants-list.js [36m304 [90m2ms[0m
+Getting data
+[90mGET /plants/data/?name=&sort=name&page=2&pagesize=5 [32m200 [90m154ms - 3.66kb[0m
+[90mGET /stylesheets/plants.css [36m304 [90m2ms[0m
+[90mGET /javascripts/plants-list.js [36m304 [90m1ms[0m
+[90mGET /javascripts/plants.js [36m304 [90m1ms[0m
+[90mGET /javascripts/plants-list.js [36m304 [90m1ms[0m
+Getting data
+[90mGET /plants/data/?name=&sort=name&page=3&pagesize=5 [32m200 [90m106ms - 3.66kb[0m
+[90mGET /stylesheets/plants.css [36m304 [90m1ms[0m
+[90mGET /javascripts/plants-list.js [36m304 [90m1ms[0m
+[90mGET /javascripts/plants.js [36m304 [90m0ms[0m
+[90mGET /javascripts/plants-list.js [36m304 [90m1ms[0m
+Getting data
+[90mGET /plants/data/?name=&sort=name&page=1&pagesize=5 [36m304 [90m100ms[0m
+[90mGET /stylesheets/plants.css [36m304 [90m1ms[0m
+[90mGET /javascripts/plants-list.js [36m304 [90m1ms[0m
+[90mGET /javascripts/plants.js [36m304 [90m1ms[0m
+[90mGET /javascripts/plants-list.js [36m304 [90m1ms[0m
+Getting data
+[90mGET /plants/data/?name=&sort=weight&page=1&pagesize=5 [32m200 [90m98ms - 3.6kb[0m
+[90mGET /stylesheets/plants.css [36m304 [90m1ms[0m
+[90mGET /javascripts/plants-list.js [36m304 [90m1ms[0m
+[90mGET /javascripts/plants.js [36m304 [90m1ms[0m
+[90mGET /javascripts/plants-list.js [36m304 [90m0ms[0m
+Getting data
+[90mGET /plants/data/?name=&sort=name&page=1&pagesize=5 [36m304 [90m120ms[0m
+[90mGET /stylesheets/plants.css [36m304 [90m2ms[0m
+[90mGET /javascripts/plants.js [36m304 [90m1ms[0m
+[90mGET /javascripts/plants-list.js [36m304 [90m1ms[0m
+Getting data
+[90mGET /plants/data/?name=onion&sort=name&page=1&pagesize=5 [32m200 [90m163ms - 3.1kb[0m
+[90mGET /stylesheets/plants.css [36m304 [90m3ms[0m
+[90mGET /javascripts/plants-list.js [36m304 [90m0ms[0m
+[90mGET /javascripts/plants.js [36m304 [90m0ms[0m
+[90mGET /javascripts/plants-list.js [36m304 [90m2ms[0m
+Getting data
+[90mGET /plants/data/?name=&sort=name&page=1&pagesize=5 [36m304 [90m102ms[0m
+[90mGET /stylesheets/plants.css [36m304 [90m0ms[0m
+[90mGET /javascripts/plants.js [36m304 [90m1ms[0m
+[90mGET /javascripts/plants-list.js [36m304 [90m1ms[0m
+[90mGET /javascripts/plants-list.js [36m304 [90m1ms[0m
+[90mGET /plants/data/ajax/?command=add&name=apricot&weight=0.1 [32m200 [90m4ms[0m
+Getting data
+[90mGET /plants/data/?name=&sort=name&page=1&pagesize=5 [32m200 [90m91ms - 3.64kb[0m
+[90mGET /stylesheets/plants.css [36m304 [90m1ms[0m
+[90mGET /javascripts/plants-list.js [36m304 [90m1ms[0m
+[90mGET /javascripts/plants.js [36m304 [90m1ms[0m
+Getting data
+[90mGET /plants/data/?name=apricot&sort=name&page=1&pagesize=5 [32m200 [90m91ms - 2.68kb[0m
+[90mGET /stylesheets/plants.css [36m304 [90m0ms[0m
+[90mGET /javascripts/plants-list.js [36m304 [90m0ms[0m
+[90mGET /javascripts/plants.js [36m304 [90m1ms[0m
+[90mGET /javascripts/plants-list.js [36m304 [90m0ms[0m
+Getting data
+[90mGET /plants/data/?name=&sort=name&page=1&pagesize=5 [36m304 [90m88ms[0m
+[90mGET /stylesheets/plants.css [36m304 [90m2ms[0m
+[90mGET /javascripts/plants-list.js [36m304 [90m1ms[0m
+[90mGET /javascripts/plants.js [36m304 [90m1ms[0m
+[90mGET /javascripts/plants-list.js [36m304 [90m1ms[0m
+Getting data
+[90mGET /plants/summary/ [32m200 [90m57ms - 2.17kb[0m
+[90mGET /stylesheets/plants.css [36m304 [90m1ms[0m
+[90mGET /javascripts/plants-summary.js [32m200 [90m1ms - 0b[0m
+[90mGET /javascripts/plants.js [36m304 [90m1ms[0m
+[90mGET /javascripts/plants-summary.js [32m200 [90m1ms - 0b[0m
