@@ -14,7 +14,7 @@ Go to http://localhost:3000/plants to access the app
 
 To build an example database (set database password in model/db.js):
 
-`CREATE DATABASE IF NOT EXISTS node;
+```CREATE DATABASE IF NOT EXISTS node;
 USE node;
 
 CREATE TABLE IF NOT EXISTS plants (
@@ -41,7 +41,7 @@ INSERT INTO plants (name, weight) VALUES
   ('potato',0.48);
 
 CREATE USER 'node'@'localhost' IDENTIFIED BY 'node-password';
-GRANT ALL ON node.* TO 'node'@'localhost';`
+GRANT ALL ON node.* TO 'node'@'localhost';```
 
 
 TODO
