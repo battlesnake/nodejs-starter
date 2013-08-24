@@ -1,18 +1,16 @@
 nodejs-starter
 ==============
 
-First attempt at a nodejs/ajax app
+First attempt at a nodejs/ajax app.  It provides a web interface for editing a table within a MySQL database, and a summary page which allows aggregation of the data.
 
 
-To start:
-
-`node app`
+To start: `node app`
 
 
-Go to http://localhost:3000/plants to access the app
+Go to `http://localhost:3000/plants` to access the app
 
 
-To build an example database (set database password in model/db.js):
+To build an example database to play with:
 
 ```sql
 CREATE DATABASE IF NOT EXISTS node;
@@ -47,12 +45,14 @@ CREATE USER 'node'@'localhost' IDENTIFIED BY 'node-password';
 GRANT ALL ON node.* TO 'node'@'localhost';
 ```
 
+Remember to set database password in `model/db.js` if you changed it from `node-password`
+
 
 TODO
 ----
- - AJAX return XML via jade.
- - Use AJAX for page / page size change instead of reload.
- - AJAX return page number of edited/added item so we can request that page.
- - Make the "table" jade code an include so plants and plants_ajax can share it.
- - In other words, deduplicate the server code and do some proper AJAX...
- - Make the column CSS better, so they have sensible sizes (try Chrome to see the ugliness)
+ - Make AJAX return XML/HTML fragments via jade.
+ - Use AJAX for change of page / page size instead of reloading the page.
+ - Make AJAX edits/additions return page number of edited/added item so we can go to that page (via AJAX again).
+ - Make the "table rows" jade code an include so plants and plants_ajax can share it.
+ - Make the column CSS better, so they have sensible, deterministic sizes (try Chrome to see the ugliness)
+ - Makbe use Stylus to do the previous bit of styling, might as well learn it?
