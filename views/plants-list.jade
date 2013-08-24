@@ -21,7 +21,7 @@ block content
 				tr(id='row' + plant.id)
 					for fname in fields
 						td(id=fname + plant.id)= plant[fname]
-					td(id='buttons' + plant.id)
+					td(id='buttons' + plant.id).compact
 						div(id='defbuttons' + plant.id)
 							a.button(href='#', onclick='editItem(' + plant.id + ')') edit
 							a.button(href='#', onclick='deleteItem(' + plant.id + ')') delete
@@ -68,6 +68,6 @@ block content
 		for fname in fields
 			div(id=fname + 'editor')
 				input(type='text', id=fname + 'editbox').editbox
-		#editorbuttons
+		#editorbuttons.compact
 			a.button(href='#', onclick='endEdit(true)') save
 			a.button(href='#', onclick='endEdit(false)') cancel

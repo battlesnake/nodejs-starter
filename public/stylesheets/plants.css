@@ -108,3 +108,8 @@ a {
 	display: none;
 	min-height: 1.2em;
 }
+
+td.compact {
+	white-space: nowrap;
+	width: 1px;
+}
