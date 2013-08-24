@@ -1,0 +1,13 @@
+doctype 5
+html
+	head
+		title= title
+		link(rel='stylesheet', href='/stylesheets/plantlist.css')
+		block head
+	body
+		#content
+			h1= title
+			- if (typeof(error) !== 'undefined')
+				#error.error= error
+			- else
+				block content

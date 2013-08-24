@@ -1,0 +1,48 @@
+extends plants-layout
+
+block head
+	script(src='javascripts/plantdb.js')
+	script(src='javascripts/plantsummary.js')
+	
+block content
+	table
+		colgroup
+			col(span='1', style='width: 20em;')
+			for fname in fields.slice(1)
+				col(span='1')
+		thead
+			tr
+				for fname in fields
+					th
+						a(href='#', onclick='sortByCol("' + fname + '")')= fname
+		tbody
+			for plant in data
+				tr
+					for fname in fields
+						td= plant[fname]
+		tfoot
+			tr
+				th(colspan=fields.length)
+					form(action='#', method='get', id='navForm')
+						div.flexbox
+							div.flex
+								a(href='data') Database
+							div.flex
+								| Sort by:
+								select(name='sort', onchange='submitNavForm()')#sortcol
+									for fname in fields
+										option(value=fname, selected=sort==fname)= fname
+							div.flex
+								| Page:
+								input(name='page', type='hidden', id='pagenum', value=page)
+								input(name='pagesize', type='hidden', id='pagesize', value=pagesize)
+								a(href='#', onclick='doPage(1)').hspace <<
+								- for (var pnum = page - 1; pnum <= page + 1; pnum++)
+									- if (pnum >= 1 && pnum <= pagecount)
+										a(href='#', onclick='doPage(' + pnum + ')', class=pnum==page?'active':'').hspace= pnum
+								a(href='#', onclick='doPage(' + pagecount + ')').hspace >>
+							div.flex
+								| Items per page:
+								- var psizes = [1, 5, 10, 25, 50, 100];
+								- each psize in psizes
+									a(href='#', onclick='doRepage(' + psize +')', class=psize==pagesize?'active':'').hspace= psize

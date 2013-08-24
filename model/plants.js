@@ -1,13 +1,31 @@
 var db = require('./db');
 
-/* Lists plants, name, sort, page, pagesize are optional */
-/* function callback(err, { result pagecount names fields }) */
-exports.list = function(name, sort, page, pagesize, callback) {
-	var queries = [];
-	/* Main query */
-	var query = [];
-	var params = [];
-	query.push('select SQL_CALC_FOUND_ROWS * from plants');
+/* Parses a list of queries */
+/* The query callbacks(state, result) should modify the state object */
+/* The main callback(err, state) is called on error or on completion */
+function parseQueryList(queries, state, callback) {
+	if (!queries.length) {
+		callback(null, state);
+		return;
+	}
+	var data = queries.shift();
+	db.query(data.query, data.params,
+		function (err, result) {
+			if (err)
+				callback(err, state);
+			else {
+				data.callback(state, result);
+				parseQueryList(queries, state, callback);
+			}
+		});
+};
+
+/* Add extra clauses to a query */
+function querySortLimit(query, params, extra) {
+	var	name = extra.name,
+		sort = extra.sort,
+		page = extra.page,
+		pagesize = extra.pagesize;
 	if (name) {
 		query.push('where ?');
 		params.push({ 'name': name });
@@ -20,6 +38,22 @@ exports.list = function(name, sort, page, pagesize, callback) {
 		query.push('limit ?, ?');
 		params.push((page - 1) * pagesize, pagesize);
 	}
+}
+
+/* Lists plants, name, sort, page, pagesize are optional */
+/* function callback(err, { result fields pagecount names }) */
+exports.list = function(name, sort, page, pagesize, callback) {
+	var queries = [];
+	/* Main query */
+	var query = [];
+	var params = [];
+	query.push('select SQL_CALC_FOUND_ROWS * from plants');
+	querySortLimit(query, params, {
+		'name': name,
+		'sort': sort,
+		'page': page,
+		'pagesize': pagesize
+	});
 	/* Build a query list and use pseudorecursion to avoid a stupid level of indentation */
 	queries.push(
 		{
@@ -32,11 +66,11 @@ exports.list = function(name, sort, page, pagesize, callback) {
 		});
 	queries.push(
 		{
-			'query'		: 'select FOUND_ROWS() as count',
+			'query'		: 'select FOUND_ROWS() as rowcount',
 			'params'	: null,
 			'callback'	:
 				function (state, value) {
-					state.pagecount = Math.ceil(value[0].count / pagesize);
+					state.pagecount = Math.ceil(value[0].rowcount / pagesize);
 				}
 		});
 	queries.push(
@@ -51,36 +85,9 @@ exports.list = function(name, sort, page, pagesize, callback) {
 						});
 				}
 		});
-	queries.push(
-		{
-			'query'		: 'show columns from plants',
-			'params'	: null,
-			'callback'	:
-				function (state, value) {
-					state.fields = value.map(
-						function (row) {
-							return row.Field;
-						});
-				}
-		});
-	var parseQueryList =
-		function (queries, state, callback) {
-			if (!queries.length) {
-				callback(null, state);
-				return;
-			}
-			var data = queries.shift();
-			db.query(data.query, data.params,
-				function (err, result) {
-					if (err)
-						callback(err, state);
-					else {
-						data.callback(state, result);
-						parseQueryList(queries, state, callback);
-					}
-				});
-		};
-	var state = { };
+	var state = {
+		fields: [ 'name', 'weight' ]
+	};
 	parseQueryList(queries, state,
 		function (err, state) {
 			if (err)
@@ -89,12 +96,53 @@ exports.list = function(name, sort, page, pagesize, callback) {
 		});
 };
 
-/* Lists plant types */
-/* function callback(err, array_of_names) */
-exports.types = function(callback) {
-	db.query('select name from plants order by name asc', null,
-		function(err, result) {
-			callback(err, result);
+/* Summarises (aggregates) the data */
+/* function callback(err, { result fields pagecount }) */
+exports.summary = function(sort, page, pagesize, callback) {
+	var queries = [];
+	/* Main query */
+	var query = [];
+	var params = [];
+	query.push('select SQL_CALC_FOUND_ROWS');
+	query.push([
+		'name',
+		'COUNT(name) as `count`',
+		'FORMAT(SUM(weight), 2) as `total weight`',
+		'FORMAT(AVG(weight), 2) as `average weight`'
+		].join(', '));
+	query.push('from plants group by name');
+	querySortLimit(query, params, {
+		'sort': sort,
+		'page': page,
+		'pagesize': pagesize
+	});
+	/* Build a query list and use pseudorecursion to avoid a stupid level of indentation */
+	queries.push(
+		{
+			'query'		: query.join(' '),
+			'params'	: params,
+			'callback'	:
+				function (state, value) {
+					state.result = value;
+				}
+		});
+	queries.push(
+		{
+			'query'		: 'select FOUND_ROWS() as rowcount',
+			'params'	: null,
+			'callback'	:
+				function (state, value) {
+					state.pagecount = Math.ceil(value[0].rowcount / pagesize);
+				}
+		});
+	var state = {
+		'fields': [ 'name', 'count', 'total weight', 'average weight' ]
+	};
+	parseQueryList(queries, state,
+		function (err, state) {
+			if (err)
+				console.log('Failed to read from the plant database: ' + err);
+			callback(err, state);
 		});
 };
 

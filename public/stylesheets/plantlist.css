@@ -37,6 +37,7 @@ tr:nth-child(2n+1)>td:nth-child(2n+1) {
 
 thead th, tfoot th {
 	background-color: #aaf;
+	text-transform:capitalize;
 }
 
 thead a {
@@ -81,6 +82,7 @@ tfoot {
 	flex-flow: row wrap;
 	justify-content: space-between;
 	width: 100%;
+	align-items: baseline;
 }
 
 .flex  {

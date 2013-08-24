@@ -1,0 +1,73 @@
+extends plants-layout
+
+block head
+	script(src='/javascripts/plantdb.js')
+	script(src='/javascripts/plantlist.js')
+	
+block content
+	table
+		colgroup
+				col(span='1', style='width: 20em;')
+				for fname in fields.slice(1, -1)
+					col(span='1')
+				col(span='1', style='width: 1px;')
+		thead
+			tr
+				for fname in fields
+					th
+						a(href='#', onclick='sortByCol("' + fname + '")')= fname
+				th
+		tbody
+			for plant in data
+				tr(id='row' + plant.id)
+					for fname in fields
+						td(id=fname + plant.id)= plant.name
+					td(id='buttons' + plant.id)
+						div(id='defbuttons' + plant.id)
+							a.button(href='#', onclick='deleteItem(' + plant.id + ')') x
+							a.button(href='#', onclick='editItem(' + plant.id + ')') e
+			tr#rownew
+				for fname in fields
+					td(id=fname + 'new')
+				td(id='buttonsnew')
+		tfoot
+			tr
+				th(colspan=fields.length)
+					form(action='#', method='get', id='navForm')
+						div.flexbox
+							div.flex
+								a(href='summary') Summary
+							div.flex
+								| Show only:
+								select(name='name', onchange='submitNavForm()')
+									option(value='', selected=name=='')= (All)
+									for pname in names
+										option(value=pname, selected=name==pname)= pname
+							div.flex
+								| Sort by:
+								select(name='sort', onchange='submitNavForm()')#sortcol
+									for fname in fields
+										option(value=fname, selected=sort==fname)= fname
+							div.flex
+								| Page:
+								input(name='page', type='hidden', id='pagenum', value=page)
+								input(name='pagesize', type='hidden', id='pagesize', value=pagesize)
+								a(href='#', onclick='doPage(1)').hspace <<
+								- for (var pnum = page - 1; pnum <= page + 1; pnum++)
+									- if (pnum >= 1 && pnum <= pagecount)
+										a(href='#', onclick='doPage(' + pnum + ')', class=pnum==page?'active':'').hspace= pnum
+								a(href='#', onclick='doPage(' + pagecount + ')').hspace >>
+							div.flex
+								| Items per page:
+								- var psizes = [1, 5, 10, 25, 50, 100];
+								- each psize in psizes
+									a(href='#', onclick='doRepage(' + psize +')', class=psize==pagesize?'active':'').hspace= psize
+				th
+					a.button(href='#', onclick='appendItem()') new
+	#editors
+		for fname in fields
+			div(id=fname + 'editor')
+				input(type='text', id=fname + 'editbox').editbox
+		#editorbuttons
+			a.button(href='#', onclick='endEdit(true)') save
+			a.button(href='#', onclick='endEdit(false)') cancel
