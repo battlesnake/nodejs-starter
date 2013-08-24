@@ -109,7 +109,23 @@ a {
 	min-height: 1.2em;
 }
 
-td.compact {
+th, td {
 	white-space: nowrap;
-	width: 1px;
+	padding-left: 0.5em;
+	padding-right: 0.5em;
+}
+
+td {
+	text-align: right;
+	padding-left: 1em;
+	padding-right: 0.5em;
+}
+
+td:first-child {
+	white-space: wrap;
+	text-align: left;
+}
+
+td.compact {
+	padding: 0;
 }
