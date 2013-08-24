@@ -31,15 +31,17 @@ INSERT INTO plants (name, weight) VALUES
   ('potato',0.50),
   ('potato',0.38),
   ('carrot',0.21),
-  ('potato',0.36),
-  ('potato',0.31),
+  ('onion',0.36),
+  ('onion',0.31),
   ('carrot',0.23),
-  ('potato',0.43),
+  ('onion',0.43),
   ('carrot',0.17),
   ('potato',0.46),
   ('potato',0.45),
   ('potato',0.46),
-  ('potato',0.48);
+  ('potato',0.48),
+  ('watermelon',3.12),
+  ('watermelon',3.85);
 
 CREATE USER 'node'@'localhost' IDENTIFIED BY 'node-password';
 GRANT ALL ON node.* TO 'node'@'localhost';
