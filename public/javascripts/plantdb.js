@@ -1,0 +1,172 @@
+function submitNavForm() {
+	document.getElementById('navForm').submit();
+}
+
+function doPage(num) {
+	document.getElementById('pagenum').value = num;
+	submitNavForm();
+}
+
+function doRepage(size) {
+	document.getElementById('pagesize').value = size;
+	document.getElementById('pagenum').value = 1;
+	submitNavForm();
+}
+
+function sortByCol(name) {
+	document.getElementById('sortcol').value = name;
+	submitNavForm();
+}
+
+function doAjax(params) {
+	var q = [ ];
+	for (var param in params)
+		q.push(param + '=' + encodeURIComponent(params[param]));
+	q = q.join('&');
+	var xhr = new XMLHttpRequest();
+	xhr.onreadystatechange =
+		function () {
+			switch (xhr.readyState) {
+			case 0: /* Uninitialized */
+			case 1: /* Loading */
+			case 2: /* Loaded */
+			case 3: /* Interactive */
+				return;
+			case 4: /* Completed */
+				var rep = xhr.responseText.trim();
+				if (rep == 'GOOD')
+					return;
+				else if (rep == 'INVALIDATE')
+					location.reload(false);
+				else
+					alert('The command failed:\n\n\t' + rep);
+				return;
+			default:
+				alert('Could not connect to server');
+				return;
+			}
+		};
+	xhr.open('get', '/plants/ajax/?' + q, true);
+	xhr.send(null);
+}
+
+function doAdd(name, weight) {
+	doAjax(
+		{
+			'command': 'add',
+			'name': name,
+			'weight': weight
+		});
+}
+
+function doEdit(id, weight) {
+	doAjax(
+		{
+			'command': 'edit',
+			'id': id,
+			'weight': weight
+		});
+}
+
+function doDelete(id) {
+	doAjax(
+		{
+			'command': 'delete',
+			'id': id
+		});
+}
+
+var edit = {
+	id: -1,
+	fields: [ ],
+	makeField:
+		function (name, id) {
+			return {
+				'name': name,
+				'id': id,
+				'div': document.getElementById(name + 'editor'),
+				'box': document.getElementById(name + 'editbox'),
+				'target': document.getElementById(name + id),
+				'owner': edit,
+				beginEdit:
+					function () {
+						this.box.value = this.target.innerHTML;
+						var node;
+						while (node = this.target.firstChild)
+							this.target.removeChild(node);
+						this.target.appendChild(this.div);
+					},
+				endEdit:
+					function () {
+						var value = this.box.value;
+						var purgatory = document.getElementById('editors');
+						purgatory.appendChild(this.div);
+						this.target.appendChild(document.createTextNode(value));
+						return value;
+					}
+			};
+		},
+	saveCallback: null,
+	beginEdit:
+		function (id, fieldnames, saveCallback) {
+			if (id == this.id || !fieldnames.length)
+				return;
+			this.endEdit(true);
+			this.id = id;
+			this.saveCallback = saveCallback;
+			for (var num in fieldnames) {
+				var field = this.makeField(fieldnames[num], id);
+				field.beginEdit();
+				this.fields.push(field);
+			}
+			this.editing = true;
+			this.fields[0].box.focus();
+		},
+	endEdit:
+		function (save) {
+			if (!this.fields.length)
+				return;
+			var values = { };
+			for (var num in this.fields) {
+				var field = this.fields[num];
+				values[field.name] = field.endEdit();
+				delete this.fields[num];
+			}
+			q = '';
+			for (prop in values)
+				q += '\n' + prop + ' \t=' + values[prop];
+			if (save && this.saveCallback)
+				this.saveCallback(values);
+			this.id = -1;
+		},
+	autoEnd: null
+};
+
+function isNumber(n) {
+	return !isNaN(parseFloat(n)) && isFinite(n);
+}
+
+function editItem(id) {
+	edit.beginEdit(id, [ 'weight' ],
+		function (values) {
+			doEdit(id, values.weight);
+		});
+}
+
+function appendItem() {
+	document.getElementById('rownew').style.display = 'table-row';
+	edit.beginEdit('new', [ 'name', 'weight' ],
+		function (values) {
+			doAdd(values.name, values.weight);
+		});
+}
+
+function endEdit(save) {
+	edit.endEdit(save);
+	document.getElementById('rownew').style.display = 'none';
+}
+
+function deleteItem(id) {
+	doDelete(id);
+	document.getElementById('row' + id).style.display = 'none';
+}

@@ -1,0 +1,108 @@
+body {
+	padding: 50px;
+	font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+}
+
+a {
+	color: #00B7FF;
+}
+
+#content {
+	margin: 0 5%;
+}
+
+table {
+	width: 100%;
+}
+
+td {
+	border-collapse: collapse;
+}
+
+tr:nth-child(2n)>td:nth-child(2n) {
+	background-color: #aef;
+}
+
+tr:nth-child(2n)>td:nth-child(2n+1) {
+	background-color: #aff;
+}
+
+tr:nth-child(2n+1)>td:nth-child(2n) {
+	background-color: #faf;
+}
+
+tr:nth-child(2n+1)>td:nth-child(2n+1) {
+	background-color: #eaf;
+}
+
+thead th, tfoot th {
+	background-color: #aaf;
+}
+
+thead a {
+	color: inherit;
+	text-decoration: none;
+}
+
+tfoot * {
+	color: inherit;
+}
+
+tfoot {
+	font-size: 0.8em;
+}
+
+.button {
+	padding: 0 0.4em;
+	border: 1px solid transparent;
+	text-decoration: none;
+}
+
+.button:hover {
+	border: 1px outset #eef;
+	background-color: #ccf;
+}
+
+.button:active {
+	border: 1px inset #eef;
+	background-color: #eef;
+}
+
+.hspace {
+	margin: 0 0.2em;
+}
+
+.active {
+	text-decoration: underline !important;
+}
+
+.flexbox {
+	display: flex;
+	flex-flow: row wrap;
+	justify-content: space-between;
+	width: 100%;
+}
+
+.flex  {
+}
+
+a {
+	text-decoration: none;
+}
+
+.editbox {
+	width: 100%;
+}
+
+.editor {
+	width: 100%;
+}
+
+#editors {	
+	display: none;
+}
+
+#rownew {
+	display: none;
+	min-height: 1.2em;
+}
