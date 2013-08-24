@@ -48,7 +48,8 @@ GRANT ALL ON node.* TO 'node'@'localhost';
 
 TODO
 ----
-AJAX return XML via jade.
-Use AJAX for page / page size change instead of reload.
-AJAX return page number of edited/added item so we can request that page.
-Make the "table" jade code an include so plants and plants_ajax can share it.
+ - AJAX return XML via jade.
+ - Use AJAX for page / page size change instead of reload.
+ - AJAX return page number of edited/added item so we can request that page.
+ - Make the "table" jade code an include so plants and plants_ajax can share it.
+ - In other words, deduplicate the server code and do some proper AJAX...
