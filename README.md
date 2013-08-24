@@ -55,3 +55,4 @@ TODO
  - AJAX return page number of edited/added item so we can request that page.
  - Make the "table" jade code an include so plants and plants_ajax can share it.
  - In other words, deduplicate the server code and do some proper AJAX...
+ - Make the column CSS better, so they have sensible sizes (try Chrome to see the ugliness)
