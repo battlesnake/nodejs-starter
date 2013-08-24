@@ -13,6 +13,7 @@ app.configure(function () {
 	app.set('view engine', 'jade');
 	app.use(express.favicon());
 	app.use(express.logger('dev'));
+	app.use(express.cookieParser('node-secret-cookie-key-thing'));
 	app.use(express.bodyParser());
 	app.use(express.methodOverride());
 	app.use(app.router);

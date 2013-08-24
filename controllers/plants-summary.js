@@ -1,12 +1,18 @@
 var plants = require('../models/plants');
 
 exports.page = function(req, res) {
+	var cookies = require('./cookies')(req, res);
 	var params = req.query;
-	var	sort = params.sort || 'name',
+	/* Read params from request, then cookies, then defaults */
+	var	sort = params.sort || req.cookies.sort || 'name',
 		page = parseInt(params.page || 1),
-		pagesize = parseInt(params.pagesize || 10);
+		pagesize = parseInt(params.pagesize || req.cookies.pagesize || 10);
+	/* Store params to cookies */
+	res.cookie('sort', sort);
+	res.cookie('pagesize', pagesize);
+	/* Title of page */
 	var title = 'Plants database';
-	console.log('Getting data');
+	/* Generate page from query */
 	plants.summary(sort, page, pagesize,
 		function (err, data) {
 			pageparams = {

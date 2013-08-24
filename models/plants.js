@@ -26,11 +26,11 @@ function querySortLimit(query, params, extra) {
 		sort = extra.sort,
 		page = extra.page,
 		pagesize = extra.pagesize;
-	if (name) {
+	if (name && name.length && name != '*') {
 		query.push('where ?');
 		params.push({ 'name': name });
 	}
-	if (sort) {
+	if (sort && sort.length) {
 		query.push('order by ??');
 		params.push(sort);
 	}

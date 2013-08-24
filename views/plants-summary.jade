@@ -24,14 +24,14 @@ block content
 				th(colspan=fields.length)
 					form(action='#', method='get', id='navForm')
 						div.flexbox
-							div.flex
+							span.flex
 								a(href='../data/') Go to database
-							div.flex
+							span.flex
 								| Sort by:
 								select(name='sort', onchange='submitNavForm()')#sortcol
 									for fname in fields
 										option(value=fname, selected=sort==fname)= fname
-							div.flex
+							span.flex
 								| Page:
 								input(name='page', type='hidden', id='pagenum', value=page)
 								input(name='pagesize', type='hidden', id='pagesize', value=pagesize)
@@ -40,7 +40,7 @@ block content
 									- if (pnum >= 1 && pnum <= pagecount)
 										a(href='#', onclick='doPage(' + pnum + ')', class=pnum==page?'active':'').hspace= pnum
 								a(href='#', onclick='doPage(' + pagecount + ')').hspace >>
-							div.flex
+							span.flex
 								| Items per page:
 								- var psizes = [1, 5, 10, 25, 50, 100];
 								- each psize in psizes

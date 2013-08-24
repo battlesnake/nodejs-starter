@@ -79,13 +79,16 @@ tfoot {
 
 .flexbox {
 	display: flex;
-	flex-flow: row wrap;
+	flex-direction: row;
+	flex-wrap: nowrap;
 	justify-content: space-between;
 	width: 100%;
 	align-items: baseline;
 }
 
 .flex  {
+	white-space: nowrap;
+	margin: 0 2em;
 }
 
 a {
@@ -113,6 +116,10 @@ th, td {
 	white-space: nowrap;
 	padding-left: 0.5em;
 	padding-right: 0.5em;
+}
+
+th:first-child {
+	text-align: left;
 }
 
 td {
