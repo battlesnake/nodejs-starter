@@ -1,7 +1,7 @@
 #!/usr/local/bin/node
 
 var express = require('express');
-var db = require('./model/db');
+var db = require('./models/db');
 var http = require('http');
 var path = require('path');
 
@@ -21,8 +21,8 @@ app.configure(function () {
 
 // app.get('/', require('./routes'));
 var plants = {
-	'list'		: require('./routes/plants-list'),
-	'summary'	: require('./routes/plants-summary')
+	'list'		: require('./controllers/plants-list'),
+	'summary'	: require('./controllers/plants-summary')
 };
 
 function makeRedir(from, to) {
