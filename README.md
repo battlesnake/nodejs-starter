@@ -45,7 +45,7 @@ CREATE USER 'node'@'localhost' IDENTIFIED BY 'node-password';
 GRANT ALL ON node.* TO 'node'@'localhost';
 ```
 
-Remember to set database password in `model/db.js` if you changed it from `node-password`
+Remember to set database password in `models/db.js` if you changed it from `node-password`
 
 
 TODO
