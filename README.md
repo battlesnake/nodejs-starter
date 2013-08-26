@@ -60,6 +60,5 @@ TODO
  - Make AJAX return XML/HTML fragments via jade.
  - Use AJAX for change of page / page size instead of reloading the page.
  - Make AJAX edits/additions return page number of edited/added item so we can go to that page (via AJAX again).
- - Make the "table rows" jade code an include so plants and plants_ajax can share it.
  - Make the column CSS better, so they have sensible, deterministic sizes (try Chrome to see the ugliness)
  - Makbe use Stylus to do the previous bit of styling, might as well learn it?
