@@ -5,27 +5,26 @@ function printObj(obj, name) {
 }
 
 function printObjRecurse(obj, path, level) {
-	var p = path ? (path + '.') : '';
+	var p = (typeof path != 'undefined') ? (path + '.') : '';
 	var l = level || 1;
 	var indentation = Array(l + 1).join("\t");
 	if (l > 4) {
 		console.log(indentation + '(not shown due to indentation limit)');
 		return;
 	}
-	indentation += p;
 	for (var prop in obj) {
 		var val = obj[prop];
 		var vtyp = (typeof val).toString();
 		var vstr = (vtyp == 'object') ? null : (val == null) ? 'null' : val.toString().substr(0, 20).replace("\r", "\\r").replace("\n", "\\n").replace("\t", "\\t");
 		if (vtyp == 'object') {
-			console.log(indentation + prop + ': object = {');
+			console.log(indentation + p + prop + ': object = {');
 			printObjRecurse(val, p + prop, l + 1);
 			console.log(indentation + '}');
 		}
 		else if (vtyp == 'function')
 			; //console.log(indentation + prop + ': function');
 		else
-			console.log(indentation + prop + ': ' + vtyp + ' = "' + vstr + '"');
+			console.log(indentation + p + prop + ': ' + vtyp + ' = "' + vstr + '"');
 	}
 }
 

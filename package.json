@@ -1,14 +1,14 @@
 {
-  "name": "mark-nodejs-plants",
-  "version": "0.0.1",
-  "private": true,
-  "scripts": {
-    "start": "node app.js"
-  },
-  "dependencies": {
-    "express": "*",
-    "jade": "*",
-    "connect": "*",
-    "mysql": "*"
-  }
+	"name": "mark-nodejs-plants",
+	"version": "0.0.1",
+	"private": true,
+	"scripts": {
+		"start": "node app.js"
+	},
+	"dependencies": {
+		"express": "*",
+		"jade": "*",
+		"connect": "*",
+		"mysql": "*"
+	}
 }

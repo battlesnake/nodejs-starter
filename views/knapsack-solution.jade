@@ -1,0 +1,33 @@
+table
+	caption
+		table
+			tr
+				td
+					| Items taken:
+				td
+					= items.length
+			tr
+				td
+					| Total value:
+				td
+					!= (units['value'] || '')
+					= value.toFixed(2)
+			tr
+				td
+					| Total weight:
+				td
+					= weight.toFixed(2)
+					!= (units['weight'] || '')
+	thead
+		tr
+			- for (var field in fields)
+				th
+					a(href='#')
+						= field
+						if units[field]
+							!= ' (' + units[field] + ')'
+	tbody
+		for item in items
+			tr
+				- for (var field in fields)
+					td= (typeof item[field] == 'number') ? item[field].toFixed(2) : item[field]

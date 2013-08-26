@@ -1,0 +1,37 @@
+extends include/layout
+
+include include/nav
+
+block head
+	script(src='/javascripts/summary.js')
+	
+block content
+	table
+		colgroup
+			col(span='1')
+			for field in fields.slice(1)
+				col(span='1', style='width: 1px;')
+		thead
+			tr
+				for field in fields
+					th
+						a(href='#', onclick='sortByCol("' + field + '")')
+							= field
+							if units[field]
+								!= ' (' + units[field] + ')'
+		tbody
+			for plant in data
+				tr
+					for field in fields
+						td= plant[field]
+		tfoot
+			tr
+				th(colspan=fields.length)
+					+navform()
+						div.flexbox
+							span.flex
+								+sort(fields, sort)
+							span.flex
+								+pager(pagecount, page)
+							span.flex
+								+pagesize([10, 25, 50, 100], pagesize)

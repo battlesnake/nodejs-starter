@@ -1,1 +1,10 @@
-nohup node app &>/tmp/node-run-mark.log & disown %%
+#!/bin/bash
+
+kill "`pidof node`" &> /dev/null
+
+if [ -z "$1" ]
+then	echo "Launching node server in permanent mode"
+	nohup node app &>/dev/null & disown %%
+else	echo "Launching node server in debug mode"
+	node app & disown %%
+fi

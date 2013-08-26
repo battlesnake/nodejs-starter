@@ -1,0 +1,59 @@
+extends include/layout
+
+include include/nav
+
+block head
+	script(src='/javascripts/data.js')
+	
+block content
+	table
+		colgroup
+				col(span='1')
+				for field in fields.slice(1)
+					col(span='1', style='width: 1px;')
+				col(span='1', style='width: 1px;')
+		thead
+			tr
+				for field in fields
+					th
+						a(href='#', onclick='sortByCol("' + field + '")')
+							= field
+							if units[field]
+								!= ' (' + units[field] + ')'
+				th
+		tbody
+			for plant in data
+				tr(id='row' + plant.id)
+					for field in fields
+						td(id=field + plant.id)= (typeof plant[field] == 'number') ? plant[field].toFixed(2) : plant[field]
+					td(id='buttons' + plant.id).compact
+						div(id='defbuttons' + plant.id)
+							a.button(href='#', onclick='editItem(' + plant.id + ')') edit
+							a.button(href='#', onclick='deleteItem(' + plant.id + ')') delete
+			tr#rownew
+				for field in fields
+					td(id=field + 'new')
+				td(id='buttonsnew')
+					div(id='defbuttonsnew')
+		tfoot
+			tr
+				th(colspan=fields.length)
+					+navform
+						div.flexbox
+							span.flex
+								+filter(filters, filter)
+							span.flex
+								+sort(fields, sort)
+							span.flex
+								+pager(pagecount, page)
+							span.flex
+								+pagesize([10, 25, 50, 100], pagesize)
+				th
+					a.button(href='#', onclick='appendItem()') new
+	#editors
+		for field in fields
+			div(id=field + 'editor')
+				input(type='text', id=field + 'editbox').editbox
+		#editorbuttons.compact
+			a.button(href='#', onclick='endEdit(true)') save
+			a.button(href='#', onclick='endEdit(false)') cancel

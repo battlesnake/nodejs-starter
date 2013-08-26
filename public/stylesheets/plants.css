@@ -35,9 +35,23 @@ tr:nth-child(2n+1)>td:nth-child(2n+1) {
 	background-color: #eaf;
 }
 
-thead th, tfoot th {
+thead th,
+tfoot th {
 	background-color: #aaf;
-	text-transform:capitalize;
+}
+
+th>a {
+	display: block;
+}
+
+th a:first-letter {
+	text-transform: uppercase;
+}
+
+#solution {
+	background-color: #88f;
+	margin: 2px;
+	padding: 4pt;
 }
 
 thead a {
@@ -59,12 +73,12 @@ tfoot {
 	text-decoration: none;
 }
 
-.button:hover {
+.button:hover, .buttonup {
 	border: 1px outset #eef;
 	background-color: #ccf;
 }
 
-.button:active {
+.button:active, .buttondown {
 	border: 1px inset #eef;
 	background-color: #eef;
 }
@@ -81,14 +95,46 @@ tfoot {
 	display: flex;
 	flex-direction: row;
 	flex-wrap: nowrap;
-	justify-content: space-between;
+	justify-content: flex-end;
 	width: 100%;
 	align-items: baseline;
+}
+
+.flexbox.left {
+	justify-content: flex-start;
+}
+
+.flexbox.stretch {
+	justify-content: space-between;
+}
+
+.flexbox.stretch>.flexbox {
+	width: auto;
+	display: inline-flex;
 }
 
 .flex  {
 	white-space: nowrap;
 	margin: 0 2em;
+}
+
+#navbar {
+	background: #eef;
+	font-weight: bold;
+	display: flex;
+	flex-direction: row;
+	flex-wrap: wrap;
+	justify-content: flex-start;
+	align-items: baseline;
+	width: 100%;
+}
+
+#navbar>* {
+	text-align: center;
+	padding: 0.2em 2.0em;
+	margin: 0;
+	color: #000;
+	text-transform:capitalize;
 }
 
 a {
@@ -129,10 +175,59 @@ td {
 }
 
 td:first-child {
-	white-space: wrap;
+	white-space: normal;
 	text-align: left;
 }
 
 td.compact {
 	padding: 0;
 }
+
+.numeric {
+	width: 5em;
+}
+
+input, select {
+	margin: 0;
+	border: 1px solid #448;
+	background: #ccf;
+}
+
+#solution table {
+	width: auto;
+}
+
+#solution caption {
+	background: #ccf;
+	padding: 0 0.6em;
+}
+
+#solution caption>table,
+#solution caption>table>tr,
+#solution caption>table>tr>td {
+	background: inherit;
+}
+
+#solution caption>table>tr>td:nth-child(1) {
+	text-align: right;
+}
+
+#solution caption>table>tr>td:nth-child(2) {
+	text-align: left;
+}
+
+#solution caption>div>* {
+	white-space: nowrap;
+	margin-right: 2em;
+}
+
+/* Need to state the obvious for AJAX table to work */
+table           { display: table }
+tr              { display: table-row }
+thead           { display: table-header-group }
+tbody           { display: table-row-group }
+tfoot           { display: table-footer-group }
+col             { display: table-column }
+colgroup        { display: table-column-group }
+td, th          { display: table-cell }
+caption         { display: table-caption }

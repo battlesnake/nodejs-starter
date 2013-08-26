@@ -110,7 +110,8 @@ exports.summary = function(sort, page, pagesize, callback) {
 		'FORMAT(SUM(weight), 2) as `total weight`',
 		'FORMAT(AVG(weight), 2) as `average weight`'
 		].join(', '));
-	query.push('from plants group by name');
+	query.push('from plants');
+	query.push('group by name');
 	querySortLimit(query, params, {
 		'sort': sort,
 		'page': page,
@@ -143,6 +144,69 @@ exports.summary = function(sort, page, pagesize, callback) {
 			if (err)
 				console.log('Failed to read from the plant database: ' + err);
 			callback(err, state);
+		});
+};
+
+/* Gets the names of all plants in the database */
+/* function callback(err, { result pagecount }) */
+exports.names = function(page, pagesize, callback) {
+	var queries = [];
+	var query = [];
+	var params = [];
+	query.push('select SQL_CALC_FOUND_ROWS name from plants');
+	query.push('group by name');
+	querySortLimit(query, params, {
+		'sort': 'name',
+		'page': page,
+		'pagesize': pagesize
+	});
+	queries.push(
+		{
+			'query'		: query.join(' '),
+			'params'	: params,
+			'callback'	:
+				function (state, value) {
+					state.result = value;
+				}
+		});
+	queries.push(
+		{
+			'query'		: 'select FOUND_ROWS() as rowcount',
+			'params'	: null,
+			'callback'	:
+				function (state, value) {
+					state.pagecount = Math.ceil(value[0].rowcount / pagesize);
+				}
+		});
+	var state = { };
+	parseQueryList(queries, state,
+		function (err, state) {
+			if (err)
+				console.log('Failed to read from the plant database: ' + err);
+			callback(err, state);
+		});
+};
+
+/* Dumps the table */
+/* function callback(err, result) */
+exports.dump = function(callback) {
+	var queries = [];
+	/* Build a query list and use pseudorecursion to avoid a stupid level of indentation */
+	queries.push(
+		{
+			'query'		: 'select name, weight from plants',
+			'params'	: null,
+			'callback'	:
+				function (state, value) {
+					state.result = value;
+				}
+		});
+	var state = { };
+	parseQueryList(queries, state,
+		function (err, state) {
+			if (err)
+				console.log('Failed to read from the plant database: ' + err);
+			callback(err, state.result);
 		});
 };
 

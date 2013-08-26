@@ -1,0 +1,6 @@
+mixin navlink(name)
+	a.flex.button(href='../' + name + '/', class=name==PAGENAME&&'buttondown')= name
+		
++navlink('data')
++navlink('summary')
++navlink('knapsack')

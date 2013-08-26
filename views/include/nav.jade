@@ -1,0 +1,31 @@
+mixin navform()
+	form(action='#', method='get', id='navForm')
+		block
+
+mixin filter(values, current)
+	| Show only:
+	select(name='filter', id='filter', onchange='doFilter()')
+		option(value='*', selected=!current || current == '*') (All)
+		for value in values
+			option(value=value, selected=current==value)= value
+
+mixin sort(cols, current)
+	| Sort by:
+	select(name='sort', id='sort', onchange='doSort()')
+		for col in cols
+			option(value=col, selected=current==col)= col
+
+mixin pager(pages, current)
+	| Page:
+	input(name='page', id='page', type='hidden', value=current)
+	a(href='#', onclick='doPage(1)').hspace <<
+	- for (var page = current - 1; page <= current + 1; page++)
+		- if (page >= 1 && page <= pagecount)
+			a(href='#', onclick='doPage(' + page + ')', class=page==current?'active':'').hspace= page
+	a(href='#', onclick='doPage(' + pagecount + ')').hspace >>
+
+mixin pagesize(sizes, current)
+	| Items per page:
+	input(name='pagesize', id='pagesize', type='hidden', value=pagesize)
+	- each size in sizes
+		a(href='#', onclick='doRepage(' + size +')', class=size==current?'active':'').hspace= size

@@ -1,0 +1,46 @@
+extends include/layout
+
+include include/nav
+
+block head
+	script(src='/javascripts/knapsack.js')
+	
+block content
+	input#itemcount(style='display: none;', type='hidden', value=data.length)
+	table
+		colgroup
+			col(span='1')
+			for field in fields.slice(1)
+				col(span='1', style='width: 1px;')
+		thead
+			tr
+				for field in fields
+					th
+						a(href='#')
+							= field
+							if units[field]
+								!= ' (' + units[field] + ')'
+		tbody
+			- var index = 0;
+			for item in data
+				tr(id='row' + index)
+					td(id='name' + index)= item.name
+					td
+						input.valuebox(id='value'+index, value=item.value, type='text', onchange='saveValue(' + index + ')', oninput='saveValue(' + index + ')', onpaste='saveValue(' + id + ')')
+				- index++;
+		tfoot
+			tr
+				th(colspan=fields.length)
+					div.flexbox.stretch
+						div.flexbox.left
+							span.flex
+								| Maximum weight allowed:
+								input.numeric(id='maxweight', type='text', value='5', onchange='valueChanged()', oninput='valueChanged()', onpaste='valueChanged()')
+								| kg
+						+navform()
+							div.flexbox
+								span.flex
+									+pager(pagecount, page)
+								span.flex
+									+pagesize([10, 25, 50, 100], pagesize)
+	#solution

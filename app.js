@@ -16,28 +16,30 @@ app.configure(function () {
 	app.use(express.cookieParser('node-secret-cookie-key-thing'));
 	app.use(express.bodyParser());
 	app.use(express.methodOverride());
-	app.use(app.router);
 	app.use(express.static(path.join(__dirname, 'public')));
-});
+	app.use(app.router);
+	
+	function redir(to) {
+		function redirect(req, res) { res.redirect(to); };
+		return redirect;
+	}
 
-// app.get('/', require('./routes'));
-var plants = {
-	'list'		: require('./controllers/plants-list'),
-	'summary'	: require('./controllers/plants-summary')
-};
-
-function makeRedir(from, to) {
-	app.use(from,
-		function (req, res) {
-			res.redirect(to);
+	var pages = {
+		'data'		: require('./controllers/data'),
+		'summary'	: require('./controllers/summary'),
+		'knapsack'	: require('./controllers/knapsack')
+	};
+	app.get('^/*[^/]$',
+		function(req, res) {
+			res.redirect(req.url + '/');
 		});
-}
-
-app.get('/plants/summary/ajax/', plants.summary.ajax);
-app.get('/plants/summary/', plants.summary.page);
-app.get('/plants/data/ajax/', plants.list.ajax);
-app.get('/plants/data/', plants.list.page);
-makeRedir('/plants', '/plants/data/');
+	app.get('^/$', redir('/data/'));
+	for (var name in pages) {
+		app.get('^/' + name + '/$', pages[name].page);
+		if (pages[name].ajax)
+			app.post('^/' + name + '/ajax/$', pages[name].ajax);
+	}
+});
 
 http.createServer(app).listen(app.get('port'), function(){
   console.log('Express server listening on port ' + app.get('port'));
