@@ -55,9 +55,11 @@ exports.ajax = function(req, res) {
 	function commandSave(body) {
 		var cookies = require('../models/cookies')('knapsack', req, res);
 		var storedvalues = keyval.fromString(cookies.values);
-		var newvalues = keyval.fromString(body);
-		for (var name in newvalues)
-			storedvalues[name] = newvalues[name];
+		JSON.parse(body).forEach(
+			function (kv) {
+				storedvalues[kv.name] = kv.value;
+			}
+		);
 		cookies.set('values', keyval.toString(storedvalues));
 		res.statusCode = 200;
 		res.end();
