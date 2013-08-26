@@ -7,7 +7,7 @@ First attempt at a nodejs/ajax app.  It provides a web interface for editing a t
 To start: `node app`
 
 
-Go to `http://localhost:3000/plants` to access the app
+Go to `http://localhost:3000/` to access the app
 
 
 To build an example database to play with:
