@@ -48,6 +48,12 @@ GRANT ALL ON node.* TO 'node'@'localhost';
 Remember to set database password in `models/db.js` if you changed it from `node-password`
 
 
+Yes, I know that the Knapsack solver should really be in a controller not a view for true MVC,
+but for practical purposes, it's better to leave it on the client end, otherwise someone could
+submit a million light random-weight items with a maxweight of 1000kg, and grind your server
+to a halt.
+
+
 TODO
 ----
  - Make AJAX return XML/HTML fragments via jade.
