@@ -56,6 +56,7 @@ to a halt.
 
 TODO
 ----
+ - Fix sortByCol bug which occurs when clicking a column title
  - Make AJAX return XML/HTML fragments via jade.
  - Use AJAX for change of page / page size instead of reloading the page.
  - Make AJAX edits/additions return page number of edited/added item so we can go to that page (via AJAX again).
