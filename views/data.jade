@@ -16,7 +16,7 @@ block content
 			tr
 				for field in fields
 					th
-						a(href='#', onclick='sortByCol("' + field + '")')
+						a(href='#', onclick='doSort("' + field + '")')
 							= field
 							if units[field]
 								!= ' (' + units[field] + ')'

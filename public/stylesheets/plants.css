@@ -135,6 +135,7 @@ tfoot {
 	margin: 0;
 	color: #000;
 	text-transform:capitalize;
+	width: 6em;
 }
 
 a {
