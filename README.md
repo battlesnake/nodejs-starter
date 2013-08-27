@@ -7,7 +7,7 @@ First attempt at a nodejs/ajax app.  It provides a web interface for editing a t
 To start: `node app`
 
 
-Go to `http://localhost:3000/plants` to access the app
+Go to `http://localhost:3000/` to access the app
 
 
 To build an example database to play with:
@@ -48,11 +48,17 @@ GRANT ALL ON node.* TO 'node'@'localhost';
 Remember to set database password in `models/db.js` if you changed it from `node-password`
 
 
+Yes, I know that the Knapsack solver should really be in a controller not a view for true MVC,
+but for practical purposes, it's better to leave it on the client end, otherwise someone could
+submit a million light random-weight items with a maxweight of 1000kg, and grind your server
+to a halt.
+
+
 TODO
 ----
+ - Fix sortByCol bug which occurs when clicking a column title
  - Make AJAX return XML/HTML fragments via jade.
  - Use AJAX for change of page / page size instead of reloading the page.
  - Make AJAX edits/additions return page number of edited/added item so we can go to that page (via AJAX again).
- - Make the "table rows" jade code an include so plants and plants_ajax can share it.
  - Make the column CSS better, so they have sensible, deterministic sizes (try Chrome to see the ugliness)
  - Makbe use Stylus to do the previous bit of styling, might as well learn it?
