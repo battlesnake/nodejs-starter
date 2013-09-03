@@ -2,6 +2,7 @@ nodejs-starter
 ==============
 
 First attempt at a nodejs/ajax app.  It provides a web interface for editing a table within a MySQL database, and a summary page which allows aggregation of the data.
+As an added extra to show simple analysis, the app contains a knapsack solver...
 
 
 To start: `node app`
