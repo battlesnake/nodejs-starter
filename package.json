@@ -9,6 +9,7 @@
 		"express": "*",
 		"jade": "*",
 		"connect": "*",
-		"mysql": "*"
+		"mysql": "*",
+		"forever": "*"
 	}
 }

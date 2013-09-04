@@ -1,5 +1,7 @@
 /* Delayed auto-solve timer */
 var solveTimer = null;
+/* Incremented for each solve request, to abort previous one */
+var solveId = 0;
 
 /* Save a value */
 function saveValue(id) {
@@ -52,6 +54,13 @@ function getVisibleValues() {
 
 /* Initiate solution process */
 function solve() {
+	/*
+	 * 0. Save current "value" values (to cookie)
+	 * 1. Get full dataset from server
+	 * 2. Solve dataset
+	 * 3. Format output and display it
+	 */
+	/* 0. Save values to cookie */
 	saveValues(getVisibleValues(), solveGetData, true);
 }
 
@@ -69,13 +78,23 @@ function solveGetData() {
 			}
 			else if (xhr.status == 200) {
 				var data = JSON.parse(xhr.responseText);
-				solveExecute(data, maxweight);
+				/*
+				 * Delay the execution stage of the solver.  If the user makes another edit to
+				 * the solver parameters then solveId will be incremented again before this
+				 * solver attempt has even started, so it will be aborted leaving the event
+				 * queue free to insantly start the new solver instance.  Prevents the interface
+				 * from locking up whenever the user starts typing into the "Max weight" field
+				 * on a slow computer / in Internet Explorer.
+				 */
+				window.setTimeout(function () { solveExecute(++solveId, data, maxweight) }, 150);
 			}
 		});
 }
 
 /* 2. Solve a dataset */
-function solveExecute(itemList, maxweight) {
+function solveExecute(sid, itemList, maxweight) {
+	if (sid != solveId)
+		return;
 	/* Solve problem via branch and bound (dynamic programming doesn't like fractionals) */
 	var tree = createTree();
 	/* Sort items and store original indices */
@@ -137,7 +156,6 @@ function solveExecute(itemList, maxweight) {
 	/* Heuristic for pruning the tree */
 	var heuristic =
 		function (data) {
-			/* For some reason, doing a "return <expression>;" here sometimes returns "undefined" when it should return "true" */
 			if ((data.remain < 0) ||
 				(data.estmax < tree.best.data.value) ||
 				(data.remain < lightestItem.weight && data.value < tree.best.data.value))
@@ -155,6 +173,8 @@ function solveExecute(itemList, maxweight) {
 	/* Builds the tree */
 	var recursor =
 		function (parent, heuristic, recursor) {
+			if (sid != solveId)
+				return;
 			var item = items[parent.level];
 			if (!item)
 				return;
@@ -167,6 +187,11 @@ function solveExecute(itemList, maxweight) {
 					tree.best = node;
 					tree.pruneTree(heuristic);
 				}
+				/*
+				 * Could use arguments.callee instead of self-referencing explicit parameter,
+				 * but since this is a demonstration program it should be easily readable to
+				 * even a beginner.  "recursor" it is.
+				 */
 				recursor(node, heuristic, recursor);
 			}
 		};
@@ -175,6 +200,9 @@ function solveExecute(itemList, maxweight) {
 	tree.best = tree.root;
 	/* Begin the branch and bound */
 	recursor(tree.root, heuristic, recursor);
+	/* Invalidated? Abort */
+	if (sid != solveId)
+		return;
 	/* Get list of item indices */
 	var indices = [];
 	for (var node = tree.best; node && node.up; node = node.up)
