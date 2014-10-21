@@ -6,10 +6,8 @@
 		"start": "node app.js"
 	},
 	"dependencies": {
-		"express": "*",
-		"jade": "*",
-		"connect": "*",
-		"mysql": "*",
-		"forever": "*"
+		"express": "3.x",
+		"jade": "~1.7",
+		"mysql": "~2.5.2"
 	}
 }
