@@ -4,9 +4,9 @@ exports.page = function(req, res) {
 	var cookies = require('../models/cookies')('summary', req, res);
 	var params = req.query;
 	/* Read params from request, then cookies, then defaults */
-	var	sort = params.sort || cookies.sort || 'name',
-		page = parseInt(params.page || 1),
-		pagesize = parseInt(params.pagesize || cookies.pagesize || 10);
+	var	sort = params.sort || cookies.sort || 'name';
+	var page = parseInt(params.page || 1);
+	var pagesize = parseInt(params.pagesize || cookies.pagesize || 10);
 	console.log('Page: ' + page);
 	/* Store params to cookies */
 	cookies.set('sort', sort);

@@ -5,8 +5,8 @@ exports.page = function(req, res) {
 	var cookies = require('../models/cookies')('knapsack', req, res);
 	var params = req.query;
 	/* Read params from request, then cookies, then default */
-	var	page = parseInt(params.page || 1),
-		pagesize = parseInt(params.pagesize || cookies.pagesize || 10);
+	var	page = parseInt(params.page || 1);
+	var pagesize = parseInt(params.pagesize || cookies.pagesize || 10);
 	/* Store params to cookies */
 	cookies.set('pagesize', pagesize);
 	/* Title of page */
@@ -51,6 +51,35 @@ exports.ajax = function(req, res) {
 		return;
 	}
 
+	/* Interpret command */
+	var command = req.query.command;	
+	var parsePost;
+	if (command == 'save')
+		parsePost = commandSave;
+	else if (command == 'getdata')
+		parsePost = commandGetData;
+	else if (command == 'formatsolution')
+		parsePost = commandFormatSolution;
+	else {
+		res.statusCode = 400;
+		res.contentType('text/plain');
+		res.end('Invalid command or missing parameter: ' + command);
+	}
+	
+	/* Parse POST body */
+	var body = '';
+	req.on('data', function (data) {
+		body += data;
+		/* Nuke requests larger than 100kB */
+		if (body.length > 1e5)
+			req.connection.destroy();
+	});
+	
+	req.on('end',
+		function () {
+			parsePost(body);
+		});
+	
 	/* Save some values to the cookie: KVP=> */
 	function commandSave(body) {
 		var cookies = require('../models/cookies')('knapsack', req, res);
@@ -117,32 +146,4 @@ exports.ajax = function(req, res) {
 		res.contentType('application/xml');
 		res.render('knapsack-solution', summary);
 	}
-	
-	/* Interpret command */
-	var command = req.query.command;	
-	var parsePost;
-	if (command == 'save')
-		parsePost = commandSave;
-	else if (command == 'getdata')
-		parsePost = commandGetData;
-	else if (command == 'formatsolution')
-		parsePost = commandFormatSolution;
-	else {
-		res.statusCode = 400;
-		res.contentType('text/plain');
-		res.end('Invalid command or missing parameter: ' + command);
-	}
-	
-	/* Parse POST body */
-	var body = '';
-	req.on('data', function (data) {
-		body += data;
-		/* Nuke requests larger than 100kB */
-		if (body.length > 1e5)
-			req.connection.destroy();
-	});
-	req.on('end',
-		function () {
-			parsePost(body);
-		});
 };

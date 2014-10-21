@@ -1,0 +1,5 @@
+I created this before I really understood REST or MVC, so it is a little bit
+disorganised...  I need to re-factor it at some point since people are actually
+forking it and trying it, so that it shows good practice and good design.  This
+is the first node.js app I ever created, so it is currently an example of exactly
+how *not* to use node.

@@ -4,10 +4,10 @@ exports.page = function(req, res) {
 	var cookies = require('../models/cookies')('data', req, res);
 	var params = req.query;
 	/* Read params from request, then cookies, then default */
-	var	filter = params.filter || cookies.filter || '*',
-		sort = params.sort || cookies.sort || 'name',
-		page = parseInt(params.page || 1),
-		pagesize = parseInt(params.pagesize || cookies.pagesize || 10);
+	var	filter = params.filter || cookies.filter || '*';
+	var sort = params.sort || cookies.sort || 'name';
+	var page = parseInt(params.page || 1);
+	var pagesize = parseInt(params.pagesize || cookies.pagesize || 10);
 	/* Store params to cookies */
 	cookies.set('filter', filter);
 	cookies.set('sort', sort);
