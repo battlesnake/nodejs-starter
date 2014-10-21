@@ -15,6 +15,7 @@ app.use(express.logger('dev'));
 app.use(express.cookieParser('node-secret-cookie-key-thing'));
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(app.router);
+app.locals.pretty = true;
 
 var pages = {
 	'data'		: require('./controllers/data'),

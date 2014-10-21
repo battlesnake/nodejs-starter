@@ -1,54 +1,42 @@
-/* Delayed auto-solve timer */
-var solveTimer = null;
 /* Incremented for each solve request, to abort previous one */
 var solveId = 0;
 
 /* Save a value */
 function saveValue(id) {
 	saveValues([getValue(id)]);
+	solve();
 }
 
-/* Pass values to the controller with SAVE command */
-function saveValues(values, callback, blockSolveTimer) {
-	if (solveTimer) {
-		window.clearTimeout(solveTimer);
-		solveTimer = null;
-	}
-	doAjaxJson('save', values,
-		function (xhr) {
-			if (callback)
-				callback();
-			if (!blockSolveTimer)
-				valueChanged();
-		});
+/* Save values to backend */
+function saveValues(values, callback) {
+	doAjaxJson('save', values, function () {
+		if (callback) {
+			callback();
+		}
+	});
 }
 
-/* Delayed re-solve on value change */
-function valueChanged() {
-	if (solveTimer) {
-		window.clearTimeout(solveTimer);
-		solveTimer = null;
-	}
-	solveTimer = window.setTimeout(solve, 200);
+/* Max weight changed */
+function maxWeightChanged() {
+	solve();
 }
 
 /* Get a value from the view */
 function getValue(id) {
 	var nameField = document.getElementById('name' + id);
-	if (nameField)
-		return {
-			'name'	: nameField.innerHTML,
-			'value'	: parseFloat(document.getElementById('value' + id).value)
-		}
-	else
-		return undefined;
+	return nameField && {
+		'name'	: nameField.innerHTML,
+		'value'	: parseFloat(document.getElementById('value' + id).value)
+	};
 }
 
 /* Get values from view */
 function getVisibleValues() {
 	var values = [];
-	for (i = 0; i < document.getElementById('itemcount').value; i++)
+	var max = document.getElementById('itemcount').value;
+	for (var i = 0; i < max; i++) {
 		values.push(getValue(i));
+	}
 	return values;
 }
 
@@ -61,161 +49,206 @@ function solve() {
 	 * 3. Format output and display it
 	 */
 	/* 0. Save values to cookie */
-	saveValues(getVisibleValues(), solveGetData, true);
+	saveValues(getVisibleValues(), savedValues);
+
+	function savedValues() {
+		solveGetData(loadedData);
+	}
+
+	function loadedData(data) {
+		var maxWeight = parseFloat(document.getElementById('maxweight').value);
+		solveExecute(++solveId, data, maxWeight, solvedProblem);
+	}
+
+	function solvedProblem(items) {
+		solveFormatSolution(items);
+	}
 }
 
 /* 1. Get dataset from server */
-function solveGetData() {
+function solveGetData(callback) {
 	var fulloutput = document.getElementById('solution');
-	var maxweight = parseFloat(document.getElementById('maxweight').value);
 	clearNode(fulloutput);
 	fulloutput.appendChild(document.createTextNode('Loading...'));
-	doAjaxText('getdata', '',
-		function (xhr) {
-			if (xhr.status >= 400) {
-				fulloutput.appendChild(document.createTextNode('Error: ' + xhr.responseTest));
-				return;
-			}
-			else if (xhr.status == 200) {
-				var data = JSON.parse(xhr.responseText);
-				/*
-				 * Delay the execution stage of the solver.  If the user makes another edit to
-				 * the solver parameters then solveId will be incremented again before this
-				 * solver attempt has even started, so it will be aborted leaving the event
-				 * queue free to insantly start the new solver instance.  Prevents the interface
-				 * from locking up whenever the user starts typing into the "Max weight" field
-				 * on a slow computer / in Internet Explorer.
-				 */
-				window.setTimeout(function () { solveExecute(++solveId, data, maxweight) }, 150);
-			}
-		});
+	doAjaxText('getdata', '', function (xhr) {
+		if (xhr.status === 200) {
+			callback(JSON.parse(xhr.responseText));
+		} else {
+			fulloutput.appendChild(document.createTextNode('Error: ' + xhr.responseTest));
+		}
+	});
 }
 
-/* 2. Solve a dataset */
-function solveExecute(sid, itemList, maxweight) {
-	if (sid != solveId)
+/* 2. Solve a dataset using branch and bound */
+function solveExecute(sid, itemList, maxWeight, callback) {
+	if (sid != solveId) {
 		return;
-	/* Solve problem via branch and bound (dynamic programming doesn't like fractionals) */
-	var tree = createTree();
+	}
+
+	var fulloutput = document.getElementById('solution');
+
 	/* Sort items and store original indices */
-	var items = itemList
-		.map(
-			function (item, index) {
-				return {
-					'name'	: item.name,
-					'weight': parseFloat(item.weight),
-					'value'	: parseFloat(item.value),
-					'index'	: index,
-					'density': parseFloat(item.value) / parseFloat(item.weight)
-				};
+	var itemMap = itemList
+		.map(function (item, index) {
+			return new Item(item.name, item.weight, item.value, index);
+		})
+		.filter(function (item) {
+			return item.weight <= maxWeight && item.density > 0;
+		})
+		.sort(function (a, b) {
+			return b.density - a.density;
+		});
+
+	var itemCount = itemMap.length;
+
+	/* Estimate of maximum possible value, using sorted item list */
+	var estmax = itemMap
+		.reduce(function (memo, item) {
+			/* Memo is [weight, value] */
+			var weight = memo[0], value = memo[1];
+			var remain = maxWeight - weight;
+			/* Take item */
+			if (item.weight <= remain) {
+				return [weight + item.weight, value + item.value];
 			}
-		)
-		.filter(
-			function (item) {
-				return item.weight <= maxweight && item.density > 0;
+			/* Take partial item */
+			else if (remain > 0) {
+				return [maxWeight, value + remain * item.density];
 			}
-		)
-		.sort(
-			function (a, b) {
-				return b.density - a.density;
+			/* Full, don't take item */
+			else {
+				return memo;
 			}
-		);
-	/* Estimate of maximum possible value */
-	var estmax = items
-		.reduce(
-			function (state, item) {
-				if (item.weight <= state.remain)
-					return { 'remain': state.remain - item.weight, 'value': state.value + item.value };
-				else if (state.remain > 0)
-					return { 'remain': 0, 'value': state.value + (state.remain * item.density) };
-				else
-					return state;
-			},
-			{ 'remain': maxweight, 'value': 0 })
-		.value;
+		}, [0, 0])[1];
+
 	/* Lightest item */
-	var lightestItem = items.reduce(
-		function (state, item) {
-			if (!state || item.weight < state.weight)
-				return item;
-			else
-				return state;
-		},
-		null);
-	/* Branches */
-	var BRANCH_TAKE = 0, BRANCH_LEAVE = 1;
-	/* Node metadata */
-	var newDatum =
-		function (value, remain, estmax) {
-			return {
-				'value'	: value,
-				'remain': remain,
-				'estmax': estmax
-			};
-		};
-	/* Heuristic for pruning the tree */
-	var heuristic =
-		function (data) {
-			if ((data.remain < 0) ||
-				(data.estmax < tree.best.data.value) ||
-				(data.remain < lightestItem.weight && data.value < tree.best.data.value))
-				return true;
-			else
-				return false;
-		};
-	/* Create a branch */
-	var createBranch =
-		function (state, branch, item) {
-			return newstate = (branch == BRANCH_TAKE) ?
-				newDatum(state.value + item.value, state.remain - item.weight, state.estmax) :
-				newDatum(state.value, state.remain, state.estmax - item.value);
-		};
-	/* Builds the tree */
-	var recursor =
-		function (parent, heuristic, recursor) {
-			if (sid != solveId)
-				return;
-			var item = items[parent.level];
-			if (!item)
-				return;
-			for (branch in [BRANCH_TAKE, BRANCH_LEAVE]) {
-				var data = createBranch(parent.data, branch, item);
-				if (heuristic(data))
-					continue;
-				var node = tree.insertNewNode(parent, branch, data);
-				if (data.value > tree.best.data.value) {
-					tree.best = node;
-					tree.pruneTree(heuristic);
-				}
-				/*
-				 * Could use arguments.callee instead of self-referencing explicit parameter,
-				 * but since this is a demonstration program it should be easily readable to
-				 * even a beginner.  "recursor" it is.
-				 */
-				recursor(node, heuristic, recursor);
-			}
-		};
-	/* Initialise the branch and bound root state */
-	tree.root.data = newDatum(0, maxweight, estmax+100);
-	tree.best = tree.root;
+	var lightestItem = itemMap
+		.reduce(function (min, item) {
+			return (min && min.weight < item.weight) ? min : item;
+		});
+
+	/* Create the binary tree and initialize the root element */
+	var tree = new BinaryTree(new Data(0, maxWeight, estmax));
+
+	/*
+	 * So we don't lock up the browser, the branch-and-bound uses asynchronous
+	 * callbacks for each recursive step, and thus for the result also.
+	 * Add the root node to the "nodes to examine" list.
+	 */
+	var toCall = [tree.root];
+	var nodesWalked = 0, totalNodes = Math.pow(2, itemCount), percent = -1;
+
 	/* Begin the branch and bound */
-	recursor(tree.root, heuristic, recursor);
-	/* Invalidated? Abort */
-	if (sid != solveId)
-		return;
-	/* Get list of item indices */
-	var indices = [];
-	for (var node = tree.best; node && node.up; node = node.up)
-		if (node == node.up[BRANCH_TAKE])
-			indices.push(node.up.level);
-	/* Get list of items */
-	var itemList = indices
+	var recursor = setInterval(branchAndBound, 0);
+
+	function solverCompleted() {
+		/* Get list of indices of taken items */
+		var indices = [];
+		for (var node = tree.best; node && node.parent; node = node.parent) {
+			if (node.position === 0) {
+				indices.push(node.parent.level);
+			}
+		}
+
+		/* Get list of items */
+		var resultItems = indices
 			.reverse()
-			.map(
-				function (index) {
-					return items[index];
-				});
-	solveFormatSolution(itemList);
+			.map(function (index) { return itemList[index]; });
+
+		/* Format the solution and display it */
+		callback(resultItems);
+	}
+
+	/* Item */
+	function Item(name, weight, value, index) {
+		this.name = name;
+		this.weight = parseFloat(weight);
+		this.value = parseFloat(value);
+		this.index = index;
+		this.density = this.value / this.weight;
+	}
+
+	/* BinaryTreeNode data */
+	function Data(value, remain, estmax) {
+		this.value = value;
+		this.remain = remain;
+		this.estmax = estmax;
+	}
+
+	/* Heuristic for pruning the tree */
+	function heuristic(data) {
+		var overflow = data.remain < 0;
+		var impossible1 = data.estmax < tree.best.data.value;
+		var impossible2 = data.remain < lightestItem.weight && data.value < tree.best.data.value;
+		return overflow || impossible1 || impossible2;
+	}
+
+	/* Builds the tree */
+	function branchAndBound() {
+		/* Ensure we're solving the latest dataset */
+		if (sid != solveId) {
+			clearInterval(recursor);
+			return;
+		}
+		/* No more nodes to test: solution complete */
+		if (toCall.length === 0) {
+			clearInterval(recursor);
+			solverCompleted();
+			return;
+		}
+		var parent = toCall.shift();
+		nodesWalked++;
+		/*
+		 * Due to the asynchronous implementation, we may end up trying to
+		 * recurse into a deleted item
+		 */
+		if (parent.deleted) {
+			nodesWalked += Math.pow(2, itemCount - (parent.level + 1));
+			return;
+		}
+		/* Get item corresponsing to branch level */
+		var data = parent.data;
+		var item = itemMap[parent.level];
+		for (var branch = 0; branch < 2; branch++) {
+			var take = branch === 0;
+			var data = take ?
+				new Data(data.value + item.value, data.remain - item.weight, data.estmax) :
+				new Data(data.value, data.remain, data.estmax - item.value);
+			/* Don't add item if it fails the heuristic */
+			if (heuristic(data)) {
+				nodesWalked += Math.pow(2, itemCount - (parent.level + 1));
+				continue;
+			}
+			var node = parent.insert(branch, data);
+			/* New best item? */
+			if (data.value > tree.best.data.value) {
+				tree.best = node;
+				tree.prune(heuristic);
+				/* If the stack is big, immediately remove deleted nodes from it */
+				if (toCall.length > 30) {
+					toCall = toCall.filter(function (node) {
+						var cull = node.deleted;
+						if (cull) {
+							nodesWalked += Math.pow(2, itemCount - (node.level + 1));
+						}
+						return !cull;
+					});
+				}
+			}
+			/* Recurse if there are more items to test */
+			if (node.level < itemCount) {
+				toCall.push(node);
+			}
+		}
+		var newPercent = Math.floor(nodesWalked * 100 / totalNodes);
+		if (newPercent > percent) {
+			fulloutput.innerHTML = '';
+			fulloutput.appendChild(document.createTextNode(
+				'Solving (' + Math.floor(nodesWalked * 100 / totalNodes) + '% = ' + nodesWalked + '/' + totalNodes + ') ' + 
+				'stack = ' + toCall.length));
+			percent = newPercent;
+		}
+	}
 }
 
 /* 3. HTML-format the solution and display it */
@@ -244,77 +277,76 @@ function solveFormatSolution(itemList) {
 
 window.onload = solve;
 
-
-
 /*** Data structures ***/
 
 /* Binary tree (for branch-and-bound solver) */
-function createTree() {
-	return {
-		'root'	: { 0: null, 1: null, data: null, level: 0 },
-		'best'	: null,
-		'insertNewNode'	:
-			function (parent, position, data) {
-				return this.insertNode(parent, position, this.createNode(parent, data));
-			},
-		'insertNode'	:
-			function (parent, position, node) {
-				node.level = parent.level + 1;
-				return parent[position] = node;
-			},
-		'deleteNode'	:
-			function (parent, position) {
-				if (!parent)
-					return;
-				var node = parent[position];
-				if (!node)
-					return;
-				this.deleteNode(node, 0);
-				this.deleteNode(node, 1)
-				parent[position] = null;
-			},
-		'pruneTree'	:
-			function (heuristic) {
-				var tree = this;
-				function prune(parent) {
-					for (position in [0, 1]) {
-						var node = parent[position];
-						if (node)
-							if (heuristic(node.data))
-								tree.deleteNode(parent, position);
-							else
-								prune(node);
-					}
-				}
-				if (this.root)
-					prune(this.root);
-			},
-		'createNode'	:
-			function (parent, data) {
-				return {
-					'up'	: parent,
-					'level'	: parent ? (parent.level + 1) : 0,
-					0	: null,
-					1	: null,
-					'data'	: data
-				};
-			}
-	};
+function BinaryTree(rootData) {
+	this.root = new BinaryTreeNode(null, rootData, 0);
+	this.best = this.root;
 }
 
-/* 2D array (not used unless we implement dynamic programming solver */
-function grid(w, h) {
-	return {
-		'width'	: w,
-		'height': h,
-		'data'	: new Array(w * h),
-		'get'	:
-			function (x, y) {
-				return this.data[x * h + y];
-			},
-		'set'	:
-			function (x, y, value) {
-				this.data[x * h + y] = value;
-			}
-	};
+BinaryTree.prototype = {
+	root: null,
+	best: null,
+	prune: function (heuristic) { this.root.prune(heuristic); },
+};
+
+function BinaryTreeNode(parent, data, position) {
+	this.parent = parent;
+	this.position = position;
+	this.data = data;
+	this.level = parent ? parent.level + 1 : 0;
 }
+
+BinaryTreeNode.prototype = {
+	parent: null,
+	position: null,
+	level: 0,
+	'0': null,
+	'1': null,
+	data: null,
+	deleted: false,
+	removeChild: function (position) {
+		var node = this[position];
+		if (!node) {
+			throw new Error('Cannot remove child node: no node is at that ' +
+				'position');
+		}
+		this[position] = null;
+		node.clear();
+		node.deleted = true;
+	},
+	clear: function () {
+		for (var branch = 0; branch < 2; branch++) {
+			if (this[branch]) {
+				this.removeChild(branch);
+			}
+		}
+	},
+	remove: function () {
+		var parent = this.parent;
+		if (!parent) {
+			throw new Error('Cannot remove node, node has no parent');
+		}
+		parent.removeChild(this.position);
+	},
+	insert: function (position, data) {
+		if (this[position]) {
+			throw new Error('Cannot insert node: node already exists at that ' +
+				'position');
+		}
+		return this[position] = new BinaryTreeNode(this, data, position);
+	},
+	prune: function (heuristic) {
+		if (heuristic(this.data)) {
+			this.remove();
+		} else {
+			for (var branch = 0; branch < 2; branch++) {
+				var child = this[branch];
+				if (child) {
+					child.prune(heuristic);
+				}
+			}
+		}
+	}
+};

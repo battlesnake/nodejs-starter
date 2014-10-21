@@ -26,7 +26,7 @@ block content
 				tr(id='row' + index)
 					td(id='name' + index)= item.name
 					td
-						input.valuebox(id='value'+index, value=item.value, type='text', onchange='saveValue(' + index + ')', oninput='saveValue(' + index + ')', onpaste='saveValue(' + id + ')')
+						input.valuebox(id='value'+index, value=item.value, type='text', onchange='saveValue(' + index + ')', oninput='saveValue(' + index + ')', onpaste='saveValue(' + index + ')')
 				- index++;
 		tfoot
 			tr
@@ -35,7 +35,7 @@ block content
 						div.flexbox.left
 							span.flex
 								| Maximum weight allowed:
-								input.numeric(id='maxweight', type='text', value='5', onchange='valueChanged()', oninput='valueChanged()', onpaste='valueChanged()')
+								input.numeric(id='maxweight', type='text', value='5', onchange='maxWeightChanged()', oninput='maxWeightChanged()', onpaste='maxWeightChanged()')
 								| kg
 						+navform()
 							div.flexbox
