@@ -1,3 +1,5 @@
+'use strict';
+
 /* Incremented for each solve request, to abort previous one */
 var solveId = 0;
 
@@ -125,7 +127,7 @@ function solveExecute(sid, itemList, maxWeight, callback) {
 	var lightestItem = itemMap
 		.reduce(function (min, item) {
 			return (min && min.weight < item.weight) ? min : item;
-		});
+		}, 0);
 
 	/* Create the binary tree and initialize the root element */
 	var tree = new BinaryTree(new Data(0, maxWeight, estmax));
@@ -146,7 +148,7 @@ function solveExecute(sid, itemList, maxWeight, callback) {
 		var indices = [];
 		for (var node = tree.best; node && node.parent; node = node.parent) {
 			if (node.position === 0) {
-				indices.push(node.parent.level);
+				indices.push(itemMap[node.parent.level].index);
 			}
 		}
 
@@ -176,11 +178,13 @@ function solveExecute(sid, itemList, maxWeight, callback) {
 	}
 
 	/* Heuristic for pruning the tree */
-	function heuristic(data) {
-		var overflow = data.remain < 0;
-		var impossible1 = data.estmax < tree.best.data.value;
-		var impossible2 = data.remain < lightestItem.weight && data.value < tree.best.data.value;
-		return overflow || impossible1 || impossible2;
+	function heuristic(node) {
+		/* 1e-6 rather than zero: Hack to avoid rounding errors somewhat */
+		var overflow = node.data.remain < 1e-6;
+		var impossible1 = node.data.estmax < tree.best.data.value;
+		var impossible2 = node.data.remain < lightestItem.weight && node.data.value < tree.best.data.value;
+		var impossible3 = tree.best !== node && node.hasChildren && !node.hasChildren();
+		return overflow || impossible1 || impossible2 || impossible3;
 	}
 
 	/* Builds the tree */
@@ -215,7 +219,7 @@ function solveExecute(sid, itemList, maxWeight, callback) {
 				new Data(data.value + item.value, data.remain - item.weight, data.estmax) :
 				new Data(data.value, data.remain, data.estmax - item.value);
 			/* Don't add item if it fails the heuristic */
-			if (heuristic(data)) {
+			if (heuristic({ data: data })) {
 				nodesWalked += Math.pow(2, itemCount - (parent.level + 1));
 				continue;
 			}
@@ -338,7 +342,7 @@ BinaryTreeNode.prototype = {
 		return this[position] = new BinaryTreeNode(this, data, position);
 	},
 	prune: function (heuristic) {
-		if (heuristic(this.data)) {
+		if (heuristic(this)) {
 			this.remove();
 		} else {
 			for (var branch = 0; branch < 2; branch++) {
@@ -348,5 +352,8 @@ BinaryTreeNode.prototype = {
 				}
 			}
 		}
+	},
+	hasChildren: function () {
+		return !!(this[0] || this[1]);
 	}
 };

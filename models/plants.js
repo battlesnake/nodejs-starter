@@ -1,5 +1,10 @@
 var db = require('./db');
 
+/*
+ * If I was to re-write this after a few years of using Node, it would use the
+ * caolan async library rather than this hacked-together async method chainer
+ */
+
 /* Parses a list of queries */
 /* The query callbacks(state, result) should modify the state object */
 /* The main callback(err, state) is called on error or on completion */
